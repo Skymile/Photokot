@@ -24,5 +24,10 @@ namespace Photokot
 		{
 			InitializeComponent();
 		}
+
+		private void ButtonApply_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
 	}
 }
