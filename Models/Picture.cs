@@ -16,6 +16,11 @@ namespace Models
 			this._Bitmap = new Bitmap(filename);
 		}
 
+		internal Picture(Bitmap bitmap)
+		{
+			this._Bitmap = bitmap;
+		}
+
 		public Bitmap _Bitmap;
 	}
 }

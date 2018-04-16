@@ -24,9 +24,11 @@ namespace ViewModels
 
 		}
 
+		private Camera camera = new Camera();
+
 		public void GetSource(ref Image image)
 		{
-			IntPtr ptr = picture._Bitmap.GetHbitmap();
+			IntPtr ptr = camera.Capture()._Bitmap.GetHbitmap();
 
 			image.Source = Imaging.CreateBitmapSourceFromHBitmap(
 				ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
