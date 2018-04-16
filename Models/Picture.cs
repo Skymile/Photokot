@@ -11,8 +11,11 @@ namespace Models
 	{
 		//https://github.com/Skymile/Photokot
 
-		public Picture() { }
+		public Picture(string filename)
+		{
+			this._Bitmap = new Bitmap(filename);
+		}
 
-		private Bitmap _Bitmap;
+		public Bitmap _Bitmap;
 	}
 }

@@ -25,13 +25,13 @@ namespace Photokot
 		public MainWindow()
 		{
 			InitializeComponent();
-			vm = new MainWindowVM();
+			vm = new MainWindowVM("apple.png");
 		}
 
 		private void ButtonApply_Click(object sender, RoutedEventArgs e)
 		{
 			vm.Apply();
-			
+			vm.GetSource(ref MainImage);
 		}
 
 		private MainWindowVM vm;
