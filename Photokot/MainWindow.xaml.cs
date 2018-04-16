@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using ViewModels;
+
 namespace Photokot
 {
 	/// <summary>
@@ -23,11 +25,15 @@ namespace Photokot
 		public MainWindow()
 		{
 			InitializeComponent();
+			vm = new MainWindowVM();
 		}
 
 		private void ButtonApply_Click(object sender, RoutedEventArgs e)
 		{
-
+			vm.Apply();
+			
 		}
+
+		private MainWindowVM vm;
 	}
 }
