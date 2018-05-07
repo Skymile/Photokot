@@ -14,9 +14,10 @@ namespace ViewModels
 {
 	public class MainWindowVM
 	{
-		public MainWindowVM(string filename)
+		public MainWindowVM(string filename = null)
 		{
-			this.picture = new Picture(filename);
+			if (filename != null)
+				this.picture = new Picture(filename);
 		}
 
 		public void Apply()
@@ -34,7 +35,8 @@ namespace ViewModels
 				ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
 			);
 
-			// todo releasing
+			if (!Picture.DeleteObject(ptr))
+				throw new SystemException(nameof(ptr));
 		}
 
 		private Picture picture;

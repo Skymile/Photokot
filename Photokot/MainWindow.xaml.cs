@@ -25,7 +25,7 @@ namespace Photokot
 		public MainWindow()
 		{
 			InitializeComponent();
-			vm = new MainWindowVM("apple.png");
+			vm = new MainWindowVM();
 		}
 
 		private void ButtonApply_Click(object sender, RoutedEventArgs e)

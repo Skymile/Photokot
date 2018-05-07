@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +10,6 @@ namespace Models
 {
 	public class Picture
 	{
-		//https://github.com/Skymile/Photokot
-
 		public Picture(string filename)
 		{
 			this._Bitmap = new Bitmap(filename);
@@ -20,6 +19,9 @@ namespace Models
 		{
 			this._Bitmap = bitmap;
 		}
+
+		[DllImport("gdi32.dll")]
+		public static extern bool DeleteObject(IntPtr intPtr);
 
 		public Bitmap _Bitmap;
 	}
