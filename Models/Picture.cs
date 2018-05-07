@@ -11,14 +11,20 @@ namespace Models
 {
 	public class Picture
 	{
-		public Picture(string filename)
+		public Picture(string filename = null)
 		{
-			this._Bitmap = new Bitmap(filename);
+			if (filename != null)
+				this._Bitmap = new Bitmap(filename);
 		}
 
 		internal Picture(Bitmap bitmap)
 		{
 			this._Bitmap = bitmap;
+		}
+
+		public bool IsEqual(Picture picture)
+		{
+			return true;
 		}
 
 		public unsafe Picture Apply(Effect effect)
