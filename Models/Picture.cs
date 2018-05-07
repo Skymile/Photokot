@@ -20,8 +20,7 @@ namespace Models
 			this._Bitmap = bitmap;
 		}
 
-		[DllImport("gdi32.dll")]
-		public static extern bool DeleteObject(IntPtr intPtr);
+		public BitmapPointer Pointer => new BitmapPointer(this);
 
 		public Bitmap _Bitmap;
 	}

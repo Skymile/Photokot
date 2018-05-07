@@ -9,6 +9,7 @@ using Models;
 using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.IO;
 
 namespace ViewModels
 {
@@ -29,14 +30,10 @@ namespace ViewModels
 
 		public void GetSource(ref Image image)
 		{
-			IntPtr ptr = camera.Capture()._Bitmap.GetHbitmap();
-
-			image.Source = Imaging.CreateBitmapSourceFromHBitmap(
-				ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
-			);
-
-			if (!Picture.DeleteObject(ptr))
-				throw new SystemException(nameof(ptr));
+			using (BitmapPointer ptr = camera.Capture().Pointer)
+				image.Source = Imaging.CreateBitmapSourceFromHBitmap(
+					ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
+				);
 		}
 
 		private Picture picture;
