@@ -10,6 +10,7 @@ using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace ViewModels
 {
@@ -30,7 +31,7 @@ namespace ViewModels
 
 		public void GetSource(ref Image image)
 		{
-			using (BitmapPointer ptr = camera.Capture().Pointer)
+			using (BitmapPointer ptr = camera.Capture().Apply(null).Pointer)
 				image.Source = Imaging.CreateBitmapSourceFromHBitmap(
 					ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
 				);
