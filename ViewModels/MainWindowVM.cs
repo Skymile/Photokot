@@ -31,10 +31,15 @@ namespace ViewModels
 
 		public void GetSource(ref Image image)
 		{
-			using (BitmapPointer ptr = camera.Capture().Apply(null).Pointer)
+			Picture picture = camera.Capture().Apply(null);
+
+			using (BitmapPointer ptr = picture.Pointer)
 				image.Source = Imaging.CreateBitmapSourceFromHBitmap(
 					ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
 				);
+
+			if (picture == picture)
+				;
 		}
 
 		private Picture picture;

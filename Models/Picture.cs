@@ -27,9 +27,34 @@ namespace Models
 
 		private void Unlock(BitmapData data) => _Bitmap.UnlockBits(data);
 
+		public unsafe List<Point> GetDifferences(Picture picture)
+		{
+			BitmapData oldData = FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+			BitmapData newData = picture.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+			List<Point> points = new List<Point>();
+
+			byte* left = (byte*)oldData.Scan0.ToPointer();
+			byte* right = (byte*)newData.Scan0.ToPointer();
+
+			for (int i = 0; i < oldData.Height; i++)
+				for (int j = 0; j < oldData.Width; j++)
+				{
+					int offset = i * oldData.Stride + j * 3;
+					if (left[offset] != right[offset] ||
+						left[offset + 1] != right[offset + 1] ||
+						left[offset + 2] != right[offset + 2])
+						points.Add(new Point(j, i));
+				}
+
+			Unlock(oldData);
+			picture.Unlock(newData);
+			return points;
+		}
+
 		public unsafe static bool operator ==(Picture l, Picture r)
 		{
-			if (l == null || r == null || l._Bitmap.Size == r._Bitmap.Size)
+			if (l.Equals(null) || r.Equals(null) || l._Bitmap.Size == r._Bitmap.Size)
 				return false;
 
 			BitmapData leftData = l.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -42,23 +67,24 @@ namespace Models
 
 			int chunk = leftData.Height / 4;
 
-			Task[] tasks = new Task[4];
-			for (int k = 0; k < tasks.Length; k++)
+			//Task[] tasks = new Task[4];
+			//for (int k = 0; k < tasks.Length; k++)
 			{
-				int t = k;
+				//int t = k;
 
-				tasks[k] = Task.Run(() =>
-				{
-					for (int i = k * chunk; i < k * chunk + chunk; i++)
+				//tasks[k] = Task.Run(() =>
+				//{
+					for (int i = 0; i < leftData.Height; i++)
 						for (int j = 0; j < leftData.Stride; j++)
 						{
-							int offset = i * leftData.Stride + j * 3;
+							int offset = i * leftData.Stride + j;
 
 							if (left[offset] != right[offset])
 								returnValue = false;
 						}
-				});
+				//});
 			}
+			//Task.WaitAll(tasks);
 			l.Unlock(leftData);
 			r.Unlock(rightData);
 			return returnValue;
