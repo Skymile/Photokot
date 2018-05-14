@@ -9,8 +9,10 @@ namespace Models
 {
 	public class BitmapPointer : IDisposable
 	{
-		public BitmapPointer(Picture picture) => 
+		public BitmapPointer(Picture picture)
+		{
 			this.ptr = picture._Bitmap.GetHbitmap();
+		}
 
 		public static implicit operator IntPtr(BitmapPointer bitmapPointer) => 
 			bitmapPointer.ptr;

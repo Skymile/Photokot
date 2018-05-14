@@ -11,7 +11,7 @@ namespace Tests
 		{
 			Models.Picture picture = new Models.Picture();
 
-			Assert.IsTrue(picture.IsEqual(picture));
+			Assert.IsTrue(picture == picture);
 		}
 	}
 }

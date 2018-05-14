@@ -10,9 +10,12 @@ namespace Models
 	{
 		public Effect(ApplyFunction apply, int width, int height)
 		{
+			if (apply == null)
+				throw new ArgumentNullException(nameof(apply));
+
 			this.Width = width;
 			this.Height = height;
-			this.Apply = apply ?? throw new ArgumentNullException(nameof(apply));
+			this.Apply = apply;
 		}
 
 		public readonly int Width;
