@@ -38,22 +38,30 @@ namespace Models
 			byte* left = (byte*)leftData.Scan0.ToPointer();
 			byte* right = (byte*)rightData.Scan0.ToPointer();
 
-			for (int i = 0; i < leftData.Height; i++)
-				for (int j = 0; j < leftData.Stride; j++)
+			bool returnValue = true;
+
+			int chunk = leftData.Height / 4;
+
+			Task[] tasks = new Task[4];
+			for (int k = 0; k < tasks.Length; k++)
+			{
+				int t = k;
+
+				tasks[k] = Task.Run(() =>
 				{
-					int offset = i * leftData.Stride + j * 3;
+					for (int i = k * chunk; i < k * chunk + chunk; i++)
+						for (int j = 0; j < leftData.Stride; j++)
+						{
+							int offset = i * leftData.Stride + j * 3;
 
-					if (left[offset] != right[offset])
-					{
-						l.Unlock(leftData);
-						r.Unlock(rightData);
-						return false;
-					}
-				}
-
+							if (left[offset] != right[offset])
+								returnValue = false;
+						}
+				});
+			}
 			l.Unlock(leftData);
 			r.Unlock(rightData);
-			return true;
+			return returnValue;
 		}
 
 		public static bool operator !=(Picture l, Picture r) => !(l == r);

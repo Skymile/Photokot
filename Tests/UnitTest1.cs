@@ -4,14 +4,15 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Tests
 {
 	[TestClass]
-	public class UnitTest1
+	public class PictureTests
 	{
 		[TestMethod]
-		public void TestMethod1()
+		public void EqualityTest()
 		{
-			Models.Picture picture = new Models.Picture();
+			Models.Picture pictureOne = new Models.Picture("apple.png");
+			Models.Picture pictureTwo = new Models.Picture("apple.png");
 
-			Assert.IsTrue(picture == picture);
+			Assert.IsTrue(pictureOne == pictureTwo);
 		}
 	}
 }
