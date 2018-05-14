@@ -54,7 +54,7 @@ namespace Models
 
 		public unsafe static bool operator ==(Picture l, Picture r)
 		{
-			if (l.Equals(null) || r.Equals(null) || l._Bitmap.Size == r._Bitmap.Size)
+			if (l.Equals(null) || r.Equals(null) || l._Bitmap.Size != r._Bitmap.Size)
 				return false;
 
 			BitmapData leftData = l.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
@@ -67,14 +67,14 @@ namespace Models
 
 			int chunk = leftData.Height / 4;
 
-			//Task[] tasks = new Task[4];
-			//for (int k = 0; k < tasks.Length; k++)
+			Task[] tasks = new Task[4];
+			for (int k = 0; k < tasks.Length; k++)
 			{
-				//int t = k;
-
-				//tasks[k] = Task.Run(() =>
-				//{
-					for (int i = 0; i < leftData.Height; i++)
+				int t = k;
+			
+				tasks[k] = Task.Run(() =>
+				{
+					for (int i = chunk * t; i < chunk * t + chunk; i++)
 						for (int j = 0; j < leftData.Stride; j++)
 						{
 							int offset = i * leftData.Stride + j;
@@ -82,9 +82,9 @@ namespace Models
 							if (left[offset] != right[offset])
 								returnValue = false;
 						}
-				//});
+				});
 			}
-			//Task.WaitAll(tasks);
+			Task.WaitAll(tasks);
 			l.Unlock(leftData);
 			r.Unlock(rightData);
 			return returnValue;
