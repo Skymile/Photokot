@@ -22,7 +22,7 @@ namespace ViewModels
 				this.picture = new Picture(filename);
 		}
 
-		public void Apply()
+		public void Apply(in int x)
 		{
 
 		}

@@ -22,10 +22,41 @@ namespace Models
 			this._Bitmap = bitmap;
 		}
 
-		public bool IsEqual(Picture picture)
+		private BitmapData FullLock(ImageLockMode mode, PixelFormat format) =>
+			_Bitmap.LockBits(new Rectangle(Point.Empty, _Bitmap.Size), mode, format);
+
+		private void Unlock(BitmapData data) => _Bitmap.UnlockBits(data);
+
+		public unsafe static bool operator ==(Picture l, Picture r)
 		{
+			if (l == null || r == null || l._Bitmap.Size == r._Bitmap.Size)
+				return false;
+
+			BitmapData leftData = l.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+			BitmapData rightData = r.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+			byte* left = (byte*)leftData.Scan0.ToPointer();
+			byte* right = (byte*)rightData.Scan0.ToPointer();
+
+			for (int i = 0; i < leftData.Height; i++)
+				for (int j = 0; j < leftData.Stride; j++)
+				{
+					int offset = i * leftData.Stride + j * 3;
+
+					if (left[offset] != right[offset])
+					{
+						l.Unlock(leftData);
+						r.Unlock(rightData);
+						return false;
+					}
+				}
+
+			l.Unlock(leftData);
+			r.Unlock(rightData);
 			return true;
 		}
+
+		public static bool operator !=(Picture l, Picture r) => !(l == r);
 
 		public unsafe Picture Apply(Effect effect)
 		{
@@ -49,7 +80,7 @@ namespace Models
 			BitmapData writeData = writeBitmap.LockBits(
 				new Rectangle(Point.Empty, _Bitmap.Size), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb
 			);
-			
+
 			IntPtr read = readData.Scan0;
 			IntPtr write = writeData.Scan0;
 
