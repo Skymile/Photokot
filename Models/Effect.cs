@@ -10,19 +10,38 @@ namespace Models
 	{
 		public Effect(ApplyFunction apply, int width, int height)
 		{
-			if (apply == null)
-				throw new ArgumentNullException(nameof(apply));
-
 			this.Width = width;
 			this.Height = height;
-			this.Apply = apply;
+			this._Apply = apply ?? throw new ArgumentNullException(nameof(apply));
 		}
 
 		public readonly int Width;
 		public readonly int Height;
 
-		public delegate void ApplyFunction(IntPtr readPointer, IntPtr writePointer, int xOffset, int yOffset);
+		public void SetSize(int bytesPerPixel, int stride, int[] operationMatrix)
+		{
+			this.BytesPerPixel = bytesPerPixel;
+			this.Stride = stride;
+			this.OperationMatrix = operationMatrix;
+		}
 
-		public ApplyFunction Apply;
+		public void Apply(
+			IntPtr readPointer, IntPtr writePointer, params object[] other
+		) => _Apply(readPointer, writePointer, BytesPerPixel, Stride, OperationMatrix, other);
+
+		public delegate void ApplyFunction(
+			IntPtr readPointer, 
+			IntPtr writePointer, 
+			int xOffset, 
+			int yOffset, 
+			int[] operationMatrix, 
+			params object[] other
+		);
+
+		private int BytesPerPixel;
+		private int Stride;
+		private int[] OperationMatrix;
+
+		private ApplyFunction _Apply;
 	}
 }

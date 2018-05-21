@@ -31,7 +31,7 @@ namespace ViewModels
 
 		public void GetSource(ref Image image)
 		{
-			Picture picture = camera.Capture().Apply(null);
+			Picture picture = camera.Capture().Apply(EffectLibrary.BlackWhite);
 
 			using (BitmapPointer ptr = picture.Pointer)
 				image.Source = Imaging.CreateBitmapSourceFromHBitmap(

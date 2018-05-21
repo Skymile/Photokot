@@ -94,17 +94,6 @@ namespace Models
 
 		public unsafe Picture Apply(Effect effect)
 		{
-			effect = new Effect(
-				(readPtr, writePtr, x, y) =>
-				{
-					byte* r = (byte*)readPtr.ToPointer();
-					byte* w = (byte*)writePtr.ToPointer();
-
-					w[0] = w[1] = w[2] = (byte)((r[0] + r[1] + r[2]) / 3);
-
-				}, 3, 3
-			);
-
 			BitmapData readData = _Bitmap.LockBits(
 				new Rectangle(Point.Empty, _Bitmap.Size), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb
 			);
@@ -118,13 +107,15 @@ namespace Models
 			IntPtr read = readData.Scan0;
 			IntPtr write = writeData.Scan0;
 
+			effect.SetSize(3, readData.Stride, null);
+
 			for (int i = 0; i < _Bitmap.Height; i++)
 			{
 				for (int j = 0; j < _Bitmap.Width; j++)
 				{
 					int offset = i * readData.Stride + j * 3;
 
-					effect.Apply(read + offset, write + offset, 3, readData.Stride);
+					effect.Apply(read + offset, write + offset);
 				}
 			}
 
