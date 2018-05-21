@@ -12,14 +12,14 @@ namespace Models
 	{
 		public Camera()
 		{
-			//capture = new Emgu.CV.VideoCapture();
+			capture = new Emgu.CV.VideoCapture();
 		}
 
 		public Picture Capture()
 		{
-			return null;//return new Picture(capture.QueryFrame().Bitmap);
+			return new Picture(capture.QueryFrame().Bitmap);
 		}
 
-		//private Emgu.CV.VideoCapture capture;
+		private Emgu.CV.VideoCapture capture;
 	}
 }

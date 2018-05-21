@@ -38,8 +38,8 @@ namespace ViewModels
 					ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
 				);
 
-			if (picture == picture)
-				;
+			//if (picture == picture)
+			//	;
 		}
 
 		private Picture picture;
