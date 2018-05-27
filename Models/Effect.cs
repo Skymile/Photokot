@@ -13,7 +13,13 @@ namespace Models
 			this.Width = width;
 			this.Height = height;
 			this._Apply = apply ?? throw new ArgumentNullException(nameof(apply));
+
+			this.WidthOffset = width / 2;
+			this.HeightOffset = height / 2;
 		}
+
+		public readonly int WidthOffset;
+		public readonly int HeightOffset;
 
 		public readonly int Width;
 		public readonly int Height;
@@ -42,6 +48,6 @@ namespace Models
 		private int Stride;
 		private int[] OperationMatrix;
 
-		private ApplyFunction _Apply;
+		private readonly ApplyFunction _Apply;
 	}
 }

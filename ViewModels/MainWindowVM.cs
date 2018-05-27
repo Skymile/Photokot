@@ -16,30 +16,24 @@ namespace ViewModels
 {
 	public class MainWindowVM
 	{
-		public MainWindowVM(string filename = null)
-		{
-			if (filename != null)
-				this.picture = new Picture(filename);
-		}
+		public MainWindowVM(string filename = null) =>
+			this.picture = filename != null ? new Picture(filename) : new Picture("apple.png");
 
-		public void Apply()
-		{
+		public void Apply(int width, int height) => 
+			this.picture = camera?.Capture().Apply(
+				EffectLibrary.Pixelize(width, height), 
+				null
+				//, new[] { ConvolutionMatrix.BoxFilter(width, height) }
+			);
 
-		}
-
-		private Camera camera = new Camera();
+		private readonly Camera camera = new Camera();
 
 		public void GetSource(ref Image image)
 		{
-			Picture picture = camera.Capture().Apply(EffectLibrary.BlackWhite);
-
 			using (BitmapPointer ptr = picture.Pointer)
 				image.Source = Imaging.CreateBitmapSourceFromHBitmap(
 					ptr, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions()
 				);
-
-			//if (picture == picture)
-			//	;
 		}
 
 		private Picture picture;

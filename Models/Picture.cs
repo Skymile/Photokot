@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Models
@@ -17,10 +14,10 @@ namespace Models
 				this._Bitmap = new Bitmap(filename);
 		}
 
-		internal Picture(Bitmap bitmap)
-		{
-			this._Bitmap = bitmap;
-		}
+		public Picture(int width, int height) : this (new Bitmap(width, height))
+		{ }
+
+		internal Picture(Bitmap bitmap) => this._Bitmap = bitmap;
 
 		private BitmapData FullLock(ImageLockMode mode, PixelFormat format) =>
 			_Bitmap.LockBits(new Rectangle(Point.Empty, _Bitmap.Size), mode, format);
@@ -92,36 +89,39 @@ namespace Models
 
 		public static bool operator !=(Picture l, Picture r) => !(l == r);
 
-		public unsafe Picture Apply(Effect effect)
+		public unsafe Picture Apply(Effect effect, int[] operationMatrix = null, object[] parameters = null)
 		{
 			BitmapData readData = _Bitmap.LockBits(
 				new Rectangle(Point.Empty, _Bitmap.Size), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb
 			);
 
-			Bitmap writeBitmap = new Bitmap(_Bitmap.Width, _Bitmap.Height);
-
-			BitmapData writeData = writeBitmap.LockBits(
-				new Rectangle(Point.Empty, _Bitmap.Size), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb
-			);
+			Picture newPicture = new Picture(_Bitmap.Width, _Bitmap.Height);
+			BitmapData writeData = newPicture.FullLock(ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
 			IntPtr read = readData.Scan0;
 			IntPtr write = writeData.Scan0;
 
-			effect.SetSize(3, readData.Stride, null);
+			effect.SetSize(
+				3,
+				readData.Stride,
+				operationMatrix ?? OperationMatrix.Default(effect.Width, effect.Height, readData.Stride, 3)
+			);
 
-			for (int i = 0; i < _Bitmap.Height; i++)
-			{
-				for (int j = 0; j < _Bitmap.Width; j++)
+			for (int i = 0; i < _Bitmap.Height / effect.Height - effect.HeightOffset / effect.Height; i++)
+				for (int j = 0; j < _Bitmap.Width / effect.Width - effect.WidthOffset / effect.Width; j++)
 				{
-					int offset = i * readData.Stride + j * 3;
+					int offset =
+						i * readData.Stride * effect.Height +
+						j * effect.Width * 3 + 
+						effect.WidthOffset * 3 + 
+						effect.HeightOffset * readData.Stride;
 
-					effect.Apply(read + offset, write + offset);
+					effect.Apply(read + offset, write + offset, parameters);
 				}
-			}
 
-			_Bitmap.UnlockBits(readData);
-			writeBitmap.UnlockBits(writeData);
-			return new Picture(writeBitmap);
+			this.Unlock(readData);
+			newPicture.Unlock(writeData);
+			return newPicture;
 		}
 
 		public BitmapPointer Pointer => new BitmapPointer(this);

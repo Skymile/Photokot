@@ -38,5 +38,8 @@
 				HorizontalAlignment="Left" Margin="14,10,0,0" 
 				VerticalAlignment="Top" Width="75" Click="ButtonApply_Click"/>
 
+		<Slider x:Name="BlockWidthSlider" HorizontalAlignment="Left" Height="15" Margin="10,35,0,0" VerticalAlignment="Top" Width="79" Maximum="32" SmallChange="1" LargeChange="4" Minimum="1" ValueChanged="BlockSizeSlider_ValueChanged"/>
+		<Slider x:Name="BlockHeightSlider" HorizontalAlignment="Left" Height="15" Margin="10,55,0,0" VerticalAlignment="Top" Width="79" Maximum="32" SmallChange="1" LargeChange="4" Minimum="1" ValueChanged="BlockSizeSlider_ValueChanged"/>
+
 	</Grid>
 </Window>

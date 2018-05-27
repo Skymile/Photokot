@@ -10,15 +10,11 @@ namespace Models
 {
 	public class Camera
 	{
-		public Camera()
-		{
+		public Camera() => 
 			capture = new Emgu.CV.VideoCapture();
-		}
 
-		public Picture Capture()
-		{
-			return new Picture(capture.QueryFrame().Bitmap);
-		}
+		public Picture Capture() =>
+			new Picture(capture.QueryFrame().Bitmap);
 
 		private Emgu.CV.VideoCapture capture;
 	}

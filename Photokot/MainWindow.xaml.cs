@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 using ViewModels;
 
@@ -30,9 +17,21 @@ namespace Photokot
 
 		private void ButtonApply_Click(object sender, RoutedEventArgs e)
 		{
-			vm.Apply();
+			vm.Apply((int)BlockWidthSlider.Value, (int)BlockHeightSlider.Value);
 			vm.GetSource(ref MainImage);
+			tempLock = false;
 		}
+
+		private void BlockSizeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+		{
+			if (vm != null && !tempLock)
+			{
+				vm.Apply((int)BlockWidthSlider.Value, (int)BlockHeightSlider.Value);
+				vm.GetSource(ref MainImage);
+			}
+		}
+
+		private bool tempLock = true;
 
 		private MainWindowVM vm;
 	}
