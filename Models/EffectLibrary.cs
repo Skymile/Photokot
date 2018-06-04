@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Models
 {
@@ -27,7 +24,7 @@ namespace Models
 					foreach (var o in offsets)
 						w[o] = w[o + 1] = w[o + 2] =
 							(byte)((r[o] + r[o + 1] + r[o + 2]) / 3);
-					
+
 					for (int i = 0; i < 3; i++)
 					{
 						int sum = 0;
@@ -53,12 +50,28 @@ namespace Models
 				{
 					int sum = 0;
 					for (int i = 0; i < offsets.Length; i++)
-						sum += r[offsets[i]+j] * matrix[i];
+						sum += r[offsets[i] + j] * matrix[i];
 					sum /= offsets.Length;
 
 					w[j] = sum > 255 ? Byte.MaxValue : sum < 0 ? Byte.MinValue : (byte)sum;
 				}
 
+			}, width, height);
+
+		public static Effect Median(int width, int height) =>
+			new Effect((read, write, x, y, offsets, _) =>
+			{
+				byte* r = (byte*)read.ToPointer();
+				byte* w = (byte*)write.ToPointer();
+
+				for (int j = 0; j < 3; j++)
+				{
+					List<byte> pixels = new List<byte>();
+					foreach (var o in offsets)
+						pixels.Add(r[o + j]);
+					pixels.Sort();
+					w[j] = pixels[pixels.Count / 2];
+				}
 			}, width, height);
 	}
 }

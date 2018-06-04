@@ -107,8 +107,11 @@ namespace Models
 				operationMatrix ?? OperationMatrix.Default(effect.Width, effect.Height, readData.Stride, 3)
 			);
 
+
 			for (int i = 0; i < _Bitmap.Height / effect.Height - effect.HeightOffset / effect.Height; i++)
 				for (int j = 0; j < _Bitmap.Width / effect.Width - effect.WidthOffset / effect.Width; j++)
+			//for (int i = 0; i < _Bitmap.Height / effect.Height - effect.HeightOffset / effect.Height; i++)
+			//	for (int j = 0; j < _Bitmap.Width / effect.Width - effect.WidthOffset / effect.Width; j++)
 				{
 					int offset =
 						i * readData.Stride * effect.Height +
