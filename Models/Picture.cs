@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Models
@@ -14,7 +15,7 @@ namespace Models
 				this._Bitmap = new Bitmap(filename);
 		}
 
-		public Picture(int width, int height) : this (new Bitmap(width, height))
+		public Picture(int width, int height) : this(new Bitmap(width, height))
 		{ }
 
 		internal Picture(Bitmap bitmap) => this._Bitmap = bitmap;
@@ -68,7 +69,7 @@ namespace Models
 			for (int k = 0; k < tasks.Length; k++)
 			{
 				int t = k;
-			
+
 				tasks[k] = Task.Run(() =>
 				{
 					for (int i = chunk * t; i < chunk * t + chunk; i++)
@@ -89,38 +90,55 @@ namespace Models
 
 		public static bool operator !=(Picture l, Picture r) => !(l == r);
 
-		public unsafe Picture Apply(Effect effect, int[] operationMatrix = null, object[] parameters = null)
+		public override bool Equals(object obj) => 
+			obj is Picture picture &&
+			EqualityComparer<BitmapPointer>.Default.Equals(this.Pointer, picture.Pointer) &&
+			EqualityComparer<Bitmap>.Default.Equals(this._Bitmap, picture._Bitmap);
+
+		public override int GetHashCode()
 		{
-			BitmapData readData = _Bitmap.LockBits(
-				new Rectangle(Point.Empty, _Bitmap.Size), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb
-			);
+			var hashCode = 1485453679;
+			hashCode = hashCode * -1521134295 + EqualityComparer<BitmapPointer>.Default.GetHashCode(this.Pointer);
+			hashCode = hashCode * -1521134295 + EqualityComparer<Bitmap>.Default.GetHashCode(this._Bitmap);
+			return hashCode;
+		}
+
+		public unsafe Picture Apply(
+			(Effect effect, int[] readBlock, int[] writeBlock, object[] parameters) first,
+			params (Effect effect, int[] readBlock, int[] writeBlock, object[] parameters)[] multiEffect
+			)
+		{
+			Picture picture = Apply(first.effect, first.readBlock, first.writeBlock, first.parameters);
+			foreach (var (effect, readBlock, writeBlock, parameters) in multiEffect)
+				picture = picture.Apply(effect, readBlock, writeBlock, parameters);
+			return picture;
+		}
+
+		public unsafe Picture Apply(Effect effect, int[] readBlock = null, int[] writeBlock = null, object[] parameters = null)
+		{
+			BitmapData readData = this.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
 			Picture newPicture = new Picture(_Bitmap.Width, _Bitmap.Height);
-			BitmapData writeData = newPicture.FullLock(ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+			BitmapData writeData = newPicture.FullLock(ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
 
-			IntPtr read = readData.Scan0;
-			IntPtr write = writeData.Scan0;
+			IntPtr read = readData.Scan0, 
+			       write = writeData.Scan0;
 
 			effect.SetSize(
-				3,
-				readData.Stride,
-				operationMatrix ?? OperationMatrix.Default(effect.Width, effect.Height, readData.Stride, 3)
+				readBlock ?? OperationMatrix.Default(effect.ReadBlock.Width, effect.ReadBlock.Height, readData.Stride, 3),
+				writeBlock ?? OperationMatrix.Default(effect.WriteBlock.Width, effect.WriteBlock.Height, readData.Stride, 3)
 			);
 
+			Size max = effect.MaxSize;
 
-			for (int i = 0; i < _Bitmap.Height / effect.Height - effect.HeightOffset / effect.Height; i++)
-				for (int j = 0; j < _Bitmap.Width / effect.Width - effect.WidthOffset / effect.Width; j++)
-			//for (int i = 0; i < _Bitmap.Height / effect.Height - effect.HeightOffset / effect.Height; i++)
-			//	for (int j = 0; j < _Bitmap.Width / effect.Width - effect.WidthOffset / effect.Width; j++)
-				{
-					int offset =
-						i * readData.Stride * effect.Height +
-						j * effect.Width * 3 + 
-						effect.WidthOffset * 3 + 
-						effect.HeightOffset * readData.Stride;
+			int innerCondition = _Bitmap.Width - max.Width / 2;
 
-					effect.Apply(read + offset, write + offset, parameters);
-				}
+			for (int i = max.Height / 2; i < _Bitmap.Height - max.Height / 2; i += effect.WriteBlock.Height)
+			{
+				int offset = i * readData.Stride;
+				for (int j = max.Width / 2; j < innerCondition; j += effect.WriteBlock.Width)
+					effect.Apply(read + offset + j * 3, write + offset + j * 3, parameters);
+			}
 
 			this.Unlock(readData);
 			newPicture.Unlock(writeData);

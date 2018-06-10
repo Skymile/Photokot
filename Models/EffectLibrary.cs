@@ -1,45 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Models
 {
 	public unsafe static class EffectLibrary
 	{
-		public readonly static Effect BlackWhite =
+		public static Effect BlackWhite() =>
 			new Effect(
-				(read, write, x, y, o, _) =>
+				(read, write, ___, __, _) =>
 				{
 					byte* r = (byte*)read.ToPointer();
 					byte* w = (byte*)write.ToPointer();
 
 					w[0] = w[1] = w[2] = (byte)((r[0] + r[1] + r[2]) / 3);
-				}, 1, 1);
+				}, new Size(1, 1), new Size(1, 1)
+			);
 
-		public static Effect Pixelize(int width, int height) =>
-			new Effect((read, write, x, y, offsets, _) =>
+		public static Effect Pixelize(Size readWriteBlock) =>
+			new Effect((read, write, rBlock, wBlock, _) =>
 				{
 					byte* r = (byte*)read.ToPointer();
 					byte* w = (byte*)write.ToPointer();
 
-					foreach (var o in offsets)
+					foreach (var o in rBlock)
 						w[o] = w[o + 1] = w[o + 2] =
 							(byte)((r[o] + r[o + 1] + r[o + 2]) / 3);
 
 					for (int i = 0; i < 3; i++)
 					{
 						int sum = 0;
-						foreach (var o in offsets)
+						foreach (var o in rBlock)
 							sum += r[o + i];
-						sum /= offsets.Length;
+						sum /= rBlock.Length;
 						byte converted = (byte)sum;
-						foreach (var o in offsets)
+						foreach (var o in wBlock)
 							w[o + i] = converted;
 					}
 
-				}, width, height);
+				}, readWriteBlock, readWriteBlock);
 
-		public static Effect Convolution(int width, int height) =>
-			new Effect((read, write, x, y, offsets, parameters) =>
+		public static Effect Convolution(Size readBlock) =>
+			new Effect((read, write, rBlock, wBlock, parameters) =>
 			{
 				int[] matrix = (int[])parameters[0];
 
@@ -49,29 +51,32 @@ namespace Models
 				for (int j = 0; j < 3; j++)
 				{
 					int sum = 0;
-					for (int i = 0; i < offsets.Length; i++)
-						sum += r[offsets[i] + j] * matrix[i];
-					sum /= offsets.Length;
+					for (int i = 0; i < rBlock.Length; i++)
+						sum += r[rBlock[i] + j] * matrix[i];
+					sum /= rBlock.Length;
 
 					w[j] = sum > 255 ? Byte.MaxValue : sum < 0 ? Byte.MinValue : (byte)sum;
 				}
 
-			}, width, height);
+			}, readBlock, new Size(1, 1));
 
-		public static Effect Median(int width, int height) =>
-			new Effect((read, write, x, y, offsets, _) =>
+		public static Effect Median(Size readBlock) =>
+			new Effect((read, write, rBlock, wBlock, _) =>
 			{
 				byte* r = (byte*)read.ToPointer();
 				byte* w = (byte*)write.ToPointer();
 
+				List<byte> pixels = new List<byte>();
+				for (int i = 0; i < 9; i++)
+					pixels.Add(0);
+
 				for (int j = 0; j < 3; j++)
 				{
-					List<byte> pixels = new List<byte>();
-					foreach (var o in offsets)
-						pixels.Add(r[o + j]);
+					for (int i = 0; i < rBlock.Length; i++)
+						pixels[i] = r[rBlock[i] + j];
 					pixels.Sort();
 					w[j] = pixels[pixels.Count / 2];
 				}
-			}, width, height);
+			}, readBlock, new Size(1, 1));
 	}
 }

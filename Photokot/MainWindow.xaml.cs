@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
 
 using ViewModels;
 
@@ -17,7 +19,10 @@ namespace Photokot
 
 		private void ButtonApply_Click(object sender, RoutedEventArgs e)
 		{
-			vm.Apply((int)BlockWidthSlider.Value, (int)BlockHeightSlider.Value);
+			Stopwatch sw = Stopwatch.StartNew();
+			vm.Apply((int)BlockWidthSlider.Value, (int)BlockHeightSlider.Value, (int)BlockSlider.Value);
+			sw.Stop();
+			StatusLabel.Content = ElapsedTime(sw.Elapsed);
 			vm.GetSource(ref MainImage);
 			tempLock = false;
 		}
@@ -26,10 +31,15 @@ namespace Photokot
 		{
 			if (vm != null && !tempLock)
 			{
-				vm.Apply((int)BlockWidthSlider.Value, (int)BlockHeightSlider.Value);
+				Stopwatch sw = Stopwatch.StartNew();
+				vm.Apply((int)BlockWidthSlider.Value, (int)BlockHeightSlider.Value, (int)BlockSlider.Value);
+				sw.Stop();
 				vm.GetSource(ref MainImage);
+				StatusLabel.Content = ElapsedTime(sw.Elapsed);
 			}
 		}
+
+		private string ElapsedTime(TimeSpan time) => $"{time.Milliseconds} ms, {time.Ticks} ticks";
 
 		private bool tempLock = true;
 

@@ -2,6 +2,8 @@
 {
 	public static class OperationMatrix
 	{
+		public static readonly int[] Identity = new[] { 0 };
+
 		public static int[] Default(int width, int height, int stride, int bytesPerPixel)
 		{
 			int[] offsets = new int[width * height];

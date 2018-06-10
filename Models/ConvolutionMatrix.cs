@@ -8,6 +8,8 @@ namespace Models
 {
 	public static class ConvolutionMatrix
 	{
+		public static readonly int[] Identity = new[] { 1 };
+
 		public static int[] BoxFilter(int width, int height)
 		{
 			var matrix = new int[width * height];
@@ -15,5 +17,19 @@ namespace Models
 				matrix[i] = 1;
 			return matrix;
 		}
+
+		public static readonly int[] SobelHorizontal = new[]
+		{
+			-1, -2, -1,
+			 0,  0,  0,
+			 1,  2,  1
+		};
+
+		public static readonly int[] SobelVertical = new[]
+		{
+			-1, 0, 1,
+			-2, 0, 2,
+			-1, 0, 1
+		};
 	}
 }

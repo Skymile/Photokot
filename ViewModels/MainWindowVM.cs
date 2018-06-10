@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using System.Windows.Controls;
-using Models;
 using System.Windows.Interop;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using System.IO;
-using System.Runtime.InteropServices;
+
+using Drawing = System.Drawing;
+using Models;
 
 namespace ViewModels
 {
@@ -19,12 +14,8 @@ namespace ViewModels
 		public MainWindowVM(string filename = null) =>
 			this.picture = filename != null ? new Picture(filename) : new Picture("apple.png");
 
-		public void Apply(int width, int height) => 
-			this.picture = camera?.Capture().Apply(
-				EffectLibrary.Pixelize(width, height), 
-				null
-				//, new[] { ConvolutionMatrix.BoxFilter(width, height) }
-			);
+		public void Apply(int width, int height, int slider) => 
+			this.picture = camera?.Capture().Apply(EffectLibrary.Pixelize(new Drawing.Size(width, height)), null, null);
 
 		private readonly Camera camera = new Camera();
 

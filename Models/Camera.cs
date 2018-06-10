@@ -4,18 +4,20 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Models
 {
 	public class Camera
 	{
-		public Camera() => 
-			capture = new Emgu.CV.VideoCapture();
+		public Camera()
+		{
+			// capture = new Emgu.CV.VideoCapture();
+		}
 
-		public Picture Capture() =>
-			new Picture(capture.QueryFrame().Bitmap);
+		public Picture Capture() => new Picture("lenna.png");
 
-		private Emgu.CV.VideoCapture capture;
+		// private readonly Emgu.CV.VideoCapture capture;
 	}
 }
