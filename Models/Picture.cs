@@ -103,7 +103,7 @@ namespace Models
 			return hashCode;
 		}
 
-		public unsafe Picture Apply(
+		public Picture Apply(
 			(Effect effect, int[] readBlock, int[] writeBlock, object[] parameters) first,
 			params (Effect effect, int[] readBlock, int[] writeBlock, object[] parameters)[] multiEffect
 			)
@@ -114,11 +114,17 @@ namespace Models
 			return picture;
 		}
 
-		public unsafe Picture Apply(Effect effect, int[] readBlock = null, int[] writeBlock = null, object[] parameters = null)
+		public unsafe Picture Apply(
+			Effect effect, 
+			int[] readBlock        = null, 
+			int[] writeBlock       = null, 
+			object[] parameters    = null, 
+			Picture writtenPicture = null
+		)
 		{
 			BitmapData readData = this.FullLock(ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
-			Picture newPicture = new Picture(_Bitmap.Width, _Bitmap.Height);
+			Picture newPicture = writtenPicture ?? new Picture(_Bitmap.Width, _Bitmap.Height);
 			BitmapData writeData = newPicture.FullLock(ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
 
 			IntPtr read = readData.Scan0, 

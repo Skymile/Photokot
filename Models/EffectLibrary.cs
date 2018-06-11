@@ -17,6 +17,18 @@ namespace Models
 				}
 			);
 
+		public static Effect Blend(double strength) =>
+			new Effect(
+				(read, write) =>
+				{
+					byte* r = (byte*)read.ToPointer();
+					byte* w = (byte*)write.ToPointer();
+
+					for (int i = 0; i < 3; i++)
+						w[i] = (byte)(w[i] * strength + r[i] * (1 - strength));
+				}
+			);
+
 		public static Effect MinRGB() =>
 			new Effect(
 				(read, write) =>
