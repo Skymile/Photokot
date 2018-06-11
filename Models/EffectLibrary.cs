@@ -105,5 +105,34 @@ namespace Models
 					w[j] = pixels[pixels.Count / 2];
 				}
 			}, readBlock, new Size(1, 1));
+
+		public static Effect Sobel() =>
+			new Effect((read, write, rBlock, wBlock, parameters) =>
+			{
+				byte* r = (byte*)read.ToPointer();
+				byte* w = (byte*)write.ToPointer();
+
+				List<int[]> matrices = new List<int[]>(parameters.Length);
+				foreach (int[] mask in parameters)
+					matrices.Add(mask);
+
+				for (int i = 0; i < 3; i++)
+				{
+					int combined = 0;
+					for (int j = 0; j < matrices.Count; j++)
+					{
+						int sum = 0;
+						for (int k = 0; k < rBlock.Length; k++)
+							sum += r[rBlock[k] + i] * matrices[j][k];
+						combined += sum * sum;
+					}
+					combined >>= 7;
+
+					w[i] = combined > Byte.MaxValue ? Byte.MaxValue :
+					       combined < Byte.MinValue ? Byte.MinValue : (byte)combined;
+				}
+
+			}, new Size(3, 3)
+		);
 	}
 }

@@ -14,11 +14,15 @@ namespace ViewModels
 		public MainWindowVM(string filename = null) =>
 			this.picture = filename != null ? new Picture(filename) : new Picture("taj.jpg");
 
-		public void Apply(int width, int height, int slider) => 
-			this.picture = camera?.Capture().Apply(
-				EffectLibrary.MinRGB()
+		public void Apply(int width, int height, int slider) =>
+			this.picture = camera?.Capture()
+				.Apply(EffectLibrary.MinRGB())
+				.Apply(EffectLibrary.Pixelize(new Drawing.Size(width, height)))
+				.Apply(EffectLibrary.Sobel(), null, null, new[] {
+					ConvolutionMatrix.SobelHorizontal, ConvolutionMatrix.SobelVertical
+				});
+			//	EffectLibrary.MinRGB()
 			//	EffectLibrary.Pixelize(new Drawing.Size(width, height)), null, null
-			);
 
 		private readonly Camera camera = new Camera();
 
