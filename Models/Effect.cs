@@ -5,12 +5,15 @@ namespace Models
 {
 	public class Effect
 	{
-		public Effect(ApplyFunction apply, Size readBlock, Size writeBlock)
+		public Effect(ApplySimpler apply, Size? readBlock = null, Size? writeBlock = null) :
+			this(Wrap(apply), readBlock, writeBlock)
+		{ }
+
+		public Effect(ApplyFunction apply, Size? readBlock = null, Size? writeBlock = null)
 		{
-			this._Apply = apply ?? throw new ArgumentNullException(nameof(apply));
-			
-			this.ReadBlock = readBlock;
-			this.WriteBlock = writeBlock;
+			this._Apply     = apply      ?? throw new ArgumentNullException(nameof(apply));
+			this.ReadBlock  = readBlock  ?? new Size(1, 1);
+			this.WriteBlock = writeBlock ?? new Size(1, 1);
 		}
 
 		public readonly Size ReadBlock;
@@ -39,6 +42,14 @@ namespace Models
 			int[] writeMatrix,
 			params object[] other
 		);
+
+		public delegate void ApplySimpler(
+			IntPtr readPointer,
+			IntPtr writePointer
+		);
+
+		private static ApplyFunction Wrap(ApplySimpler apply) =>
+			(readPointer, writePointer, readMatrix, writeMatrix, other) => apply(readPointer, writePointer);
 
 		private int[] readMatrix;
 		private int[] writeMatrix;

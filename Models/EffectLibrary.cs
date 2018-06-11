@@ -8,13 +8,40 @@ namespace Models
 	{
 		public static Effect BlackWhite() =>
 			new Effect(
-				(read, write, ___, __, _) =>
+				(read, write) =>
 				{
 					byte* r = (byte*)read.ToPointer();
 					byte* w = (byte*)write.ToPointer();
 
 					w[0] = w[1] = w[2] = (byte)((r[0] + r[1] + r[2]) / 3);
-				}, new Size(1, 1), new Size(1, 1)
+				}
+			);
+
+		public static Effect MinRGB() =>
+			new Effect(
+				(read, write) =>
+				{
+					byte* r = (byte*)read.ToPointer();
+					byte* w = (byte*)write.ToPointer();
+
+					w[0] = 0;
+					w[1] = 0;
+					w[2] = 0;
+
+					byte min = r[0];
+					if (min > r[1])
+						min = r[1];
+					if (min > r[2])
+						min = r[2];
+
+					if (min == r[0])
+						w[0] = min;
+					if (min == r[1])
+						w[1] = min;
+					if (min == r[2])
+						w[2] = min;
+
+				}
 			);
 
 		public static Effect Pixelize(Size readWriteBlock) =>

@@ -16,7 +16,7 @@ namespace Models
 			// capture = new Emgu.CV.VideoCapture();
 		}
 
-		public Picture Capture() => new Picture("lenna.png");
+		public Picture Capture() => new Picture("taj.jpg");
 
 		// private readonly Emgu.CV.VideoCapture capture;
 	}

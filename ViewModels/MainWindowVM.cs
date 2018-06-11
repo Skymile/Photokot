@@ -12,10 +12,13 @@ namespace ViewModels
 	public class MainWindowVM
 	{
 		public MainWindowVM(string filename = null) =>
-			this.picture = filename != null ? new Picture(filename) : new Picture("apple.png");
+			this.picture = filename != null ? new Picture(filename) : new Picture("taj.jpg");
 
 		public void Apply(int width, int height, int slider) => 
-			this.picture = camera?.Capture().Apply(EffectLibrary.Pixelize(new Drawing.Size(width, height)), null, null);
+			this.picture = camera?.Capture().Apply(
+				EffectLibrary.MinRGB()
+			//	EffectLibrary.Pixelize(new Drawing.Size(width, height)), null, null
+			);
 
 		private readonly Camera camera = new Camera();
 
