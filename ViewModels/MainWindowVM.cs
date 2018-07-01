@@ -26,8 +26,8 @@ namespace ViewModels
 			    })
 			);
 
-			this.picture = picture.Apply(
-				EffectLibrary.Blend(slider / 32.0), null, null, null, tmp
+			this.picture = tmp.Apply(
+				EffectLibrary.HalfBlend(slider / 32.0), null, null, null, picture
 			);
 		}
 
