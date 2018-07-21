@@ -6,7 +6,7 @@ namespace Models
 {
 	public unsafe static class EffectLibrary
 	{
-		public static Effect BlackWhite() =>
+		public static IEffect BlackWhite() =>
 			new Effect(
 				(read, write) =>
 				{
@@ -17,7 +17,7 @@ namespace Models
 				}
 			);
 
-		public static Effect Blend(double strength) =>
+		public static IEffect Blend(double strength) =>
 			new Effect(
 				(read, write) =>
 				{
@@ -29,7 +29,7 @@ namespace Models
 				}
 			);
 
-		public static Effect Binarize(byte threshold) =>
+		public static IEffect Binarize(byte threshold) =>
 			new Effect(
 				(read, write) =>
 				{
@@ -41,7 +41,7 @@ namespace Models
 				}
 			);
 
-		public static Effect HalfBlend(double strength) =>
+		public static IEffect HalfBlend(double strength) =>
 			new Effect(
 				(read, write) =>
 				{
@@ -57,7 +57,7 @@ namespace Models
 				}
 			);
 
-		public static Effect MinRGB() =>
+		public static IEffect MinRGB() =>
 			new Effect(
 				(read, write) =>
 				{
@@ -84,7 +84,7 @@ namespace Models
 				}
 			);
 
-		public static Effect Pixelize(Size readWriteBlock) =>
+		public static IEffect Pixelize(Size readWriteBlock) =>
 			new Effect((read, write, rBlock, wBlock, _) =>
 				{
 					byte* r = (byte*)read.ToPointer();
@@ -107,7 +107,7 @@ namespace Models
 
 				}, readWriteBlock, readWriteBlock);
 
-		public static Effect Convolution(Size readBlock) =>
+		public static IEffect Convolution(Size readBlock) =>
 			new Effect((read, write, rBlock, wBlock, parameters) =>
 			{
 				int[] matrix = (int[])parameters[0];
@@ -127,7 +127,7 @@ namespace Models
 
 			}, readBlock, new Size(1, 1));
 
-		public static Effect Median(Size readBlock) =>
+		public static IEffect Median(Size readBlock) =>
 			new Effect((read, write, rBlock, wBlock, _) =>
 			{
 				byte* r = (byte*)read.ToPointer();
@@ -146,7 +146,7 @@ namespace Models
 				}
 			}, readBlock, new Size(1, 1));
 
-		public static Effect Sobel() =>
+		public static IEffect Sobel() =>
 			new Effect((read, write, rBlock, wBlock, parameters) =>
 			{
 				byte* r = (byte*)read.ToPointer();

@@ -51,13 +51,13 @@
     <Compile Include="Camera.cs" />
     <Compile Include="ConvolutionMatrix.cs" />
     <Compile Include="Effect.cs" />
+    <Compile Include="EffectBase.cs" />
     <Compile Include="EffectLibrary.cs" />
+    <Compile Include="IEffect.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="OperationMatrix.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="License-LGPL.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
