@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Models;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using System.Windows;
 using System.Windows.Media.Imaging;
 
 using Drawing = System.Drawing;
-using Models;
 
 namespace ViewModels
 {
@@ -16,14 +16,14 @@ namespace ViewModels
 
 		public void Apply(int width, int height, int slider)
 		{
-			this.Picture = camera?.Capture();
+			this.Picture = this.camera?.Capture();
 
-			var tmp = this.Picture.Apply(
-			    (EffectLibrary.MinRGB(), null, null, null),
-			    (EffectLibrary.Pixelize(new Drawing.Size(width, height)), null, null, null),
-			    (EffectLibrary.Sobel(), null, null, new[] {
-			        ConvolutionMatrix.SobelHorizontal, ConvolutionMatrix.SobelVertical
-			    })
+			Picture tmp = this.Picture.Apply(
+				(EffectLibrary.MinRGB(), null, null, null),
+				(EffectLibrary.Pixelize(new Drawing.Size(width, height)), null, null, null),
+				(EffectLibrary.Sobel(), null, null, new[] {
+					ConvolutionMatrix.SobelHorizontal, ConvolutionMatrix.SobelVertical
+				})
 			);
 
 			//this.picture = tmp.Apply(

@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace Models
 {
-	public unsafe static class EffectLibrary
+	public static unsafe class EffectLibrary
 	{
 		public static IEffect BlackWhite() =>
 			new Effect(
@@ -90,18 +90,18 @@ namespace Models
 					byte* r = (byte*)read.ToPointer();
 					byte* w = (byte*)write.ToPointer();
 
-					foreach (var o in rBlock)
+					foreach (int o in rBlock)
 						w[o] = w[o + 1] = w[o + 2] =
 							(byte)((r[o] + r[o + 1] + r[o + 2]) / 3);
 
 					for (int i = 0; i < 3; i++)
 					{
 						int sum = 0;
-						foreach (var o in rBlock)
+						foreach (int o in rBlock)
 							sum += r[o + i];
 						sum /= rBlock.Length;
 						byte converted = (byte)sum;
-						foreach (var o in wBlock)
+						foreach (int o in wBlock)
 							w[o + i] = converted;
 					}
 
@@ -133,7 +133,7 @@ namespace Models
 				byte* r = (byte*)read.ToPointer();
 				byte* w = (byte*)write.ToPointer();
 
-				List<byte> pixels = new List<byte>();
+				var pixels = new List<byte>();
 				for (int i = 0; i < 9; i++)
 					pixels.Add(0);
 
@@ -152,7 +152,7 @@ namespace Models
 				byte* r = (byte*)read.ToPointer();
 				byte* w = (byte*)write.ToPointer();
 
-				List<int[]> matrices = new List<int[]>(parameters.Length);
+				var matrices = new List<int[]>(parameters.Length);
 				foreach (int[] mask in parameters)
 					matrices.Add(mask);
 
@@ -169,7 +169,7 @@ namespace Models
 					combined >>= 7;
 
 					w[i] = combined > Byte.MaxValue ? Byte.MaxValue :
-					       combined < Byte.MinValue ? Byte.MinValue : (byte)combined;
+						   combined < Byte.MinValue ? Byte.MinValue : (byte)combined;
 				}
 
 			}, new Size(3, 3)
