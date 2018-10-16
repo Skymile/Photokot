@@ -47,15 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitmapPointer.cs" />
+    <Compile Include="Support\BitmapPointer.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="ConvolutionMatrix.cs" />
-    <Compile Include="Effect.cs" />
-    <Compile Include="EffectBase.cs" />
-    <Compile Include="EffectLibrary.cs" />
-    <Compile Include="IEffect.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="OperationMatrix.cs" />
+    <Compile Include="Matrices\ConvolutionMatrix.cs" />
+    <Compile Include="Effect\Effect.cs" />
+    <Compile Include="Effect\EffectBase.cs" />
+    <Compile Include="Effect\EffectLibrary.cs" />
+    <Compile Include="Effect\IEffect.cs" />
+    <Compile Include="Support\NativeMethods.cs" />
+    <Compile Include="Matrices\OperationMatrix.cs" />
     <Compile Include="Picture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
